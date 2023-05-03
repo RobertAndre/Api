@@ -28,6 +28,7 @@ const corsOptions = {
         }
     },
 };
+
 app.use(cors(corsOptions));
 // Define your routes and API endpoints here
 
@@ -76,7 +77,13 @@ app.post('/api/claims', authenticateToken,  async (req, res) => {
             const { result } = await resp.json();
             console.log(result);
             // return result;
-            const data = await nftCollection.call("claimBatchTo", receiver, claimData, "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", pricePerToken, allowlistProof)
+            const data = await nftCollection.call("claimBatchTo",
+                                                        receiver, 
+                                                        claimData, 
+                                                        "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", 
+                                                        pricePerToken, 
+                                                        allowlistProof
+                                                );
             // return data;
             // Send a response
             res.send(JSON.stringify(data));
