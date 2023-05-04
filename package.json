@@ -1,13 +1,14 @@
 {
   "name": "api-igorandandre",
   "version": "1.0.1",
-  "description": "",
+  "description": "Igorandandre api on render",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "Igor + André",
   "license": "ISC",
   "dependencies": {
     "@thirdweb-dev/sdk": "^3.10.11",
@@ -17,5 +18,8 @@
     "express": "^4.18.2",
     "jsonwebtoken": "^9.0.0",
     "square": "^26.0.0"
+  },
+  "engines": {
+    "node": ">=14"
   }
 }

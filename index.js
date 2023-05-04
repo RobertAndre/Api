@@ -33,7 +33,7 @@ app.use(cors(corsOptions));
 // Define your routes and API endpoints here
 
 // Start the server
-const port = 3000; // Choose a port number
+const port = process.env.PORT || 3001; // Choose a port number
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });
@@ -78,11 +78,11 @@ app.post('/api/claims', authenticateToken,  async (req, res) => {
             console.log(result);
             // return result;
             const data = await nftCollection.call("claimBatchTo",
-                                                        receiver, 
-                                                        claimData, 
-                                                        "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", 
-                                                        pricePerToken, 
-                                                        allowlistProof
+                                                    receiver, 
+                                                    claimData, 
+                                                    "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", 
+                                                    pricePerToken, 
+                                                    allowlistProof
                                                 );
             // return data;
             // Send a response
