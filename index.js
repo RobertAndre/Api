@@ -14,10 +14,10 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // Configure CORS to allow requests only from whitelisted domains
-const whitelist = [process.env.ALLOWDEV, 
-                   process.env.ALLOWNFT, 
-                   process.env.ALLOWSTORE
-                  ]; // Add your whitelisted domains here
+const whitelist = [process.env.ALLOWDEV,
+process.env.ALLOWNFT,
+process.env.ALLOWSTORE
+]; // Add your whitelisted domains here
 
 const corsOptions = {
     origin: (origin, callback) => {
@@ -39,9 +39,16 @@ app.listen(port, () => {
 });
 
 
-app.post('/api/claims', authenticateToken,  async (req, res) => {
+
+app.post('/api/claims', authenticateToken, async (req, res) => {
     // Handle the incoming POST request here
     // Access the request body using req.body
+    if (req.method !== "POST") {
+        return res.status(400).json({
+            error: "Nice Try but It's time for you to leave.",
+        });
+    }
+
     const body = req.body;
     const sourceId = body.sourceId;
     const amount = body.orderTotal;
@@ -50,51 +57,95 @@ app.post('/api/claims', authenticateToken,  async (req, res) => {
     const receiver = body.receiver;
     const pricePerToken = body.pricePerToken;
     const allowlistProof = body.allowlistProof;
+    const shippingAddress = body.shippingAddress;
+    const email = body.buyerEmailAddress;
+    const note = body.note;
     const requestId = randomUUID();
 
     const options = {
         idempotencyKey: requestId,
         sourceId: sourceId,
         amountMoney: {
-          currency: 'USD',
-          amount: amount,
+            currency: 'USD',
+            amount: amount,
         },
-      };
-    // Do something with the signal data
+        autocomplete: false,
+        note: note,
+        buyerEmailAddress: email,
+        shippingAddress: shippingAddress
+    };
+
+    console.log(JSON.stringify(options));
+
+    // Set up the Square Payment API 
     const { paymentsApi } = new Client({
         accessToken: process.env.SQUARE_ACCESS_TOKEN,
         environment: process.env.SQUARE_ENVIRONMENT,
-      });
-
-      const sdk = ThirdwebSDK.fromPrivateKey(process.env.TWSDK_PRIVATE_KEY, process.env.NFT_NETWORK);
-      const nftCollection = await sdk.getContract(contract, 'edition');
-
-      try {
-
+    });
+    
+    // set up payment variables
+    let payment_id;
+    let version_token;
+   
+    try {
+        // create a delayed Capture of a Card Payment
         const resp = await paymentsApi.createPayment(options);
-        
+        console.log(JSON.stringify(resp));
+
+        // If successful save the result for later
         if (resp.status === 200) {
-            const { result } = await resp.json();
-            console.log(result);
-            // return result;
-            const data = await nftCollection.call("claimBatchTo",
-                                                    receiver, 
-                                                    claimData, 
-                                                    "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", 
-                                                    pricePerToken, 
-                                                    allowlistProof
-                                                );
-            // return data;
-            // Send a response
-            res.send(JSON.stringify(data));
+            const paymentResult = await resp.json();
+            console.log(paymentResult);
+            payment_id = paymentResult.payment.id;
+            version_token = paymentResult.payment.version_token;
         }
         // set up 
     } catch (e) {
         console.log("Problems Processing Payment", e);
         res.send("Problems Processing Payment", e);
+    
     }
 
-    
+
+    try {
+        // Time to Claim the NFTS & Prints
+        const sdk = ThirdwebSDK.fromPrivateKey(process.env.TWSDK_PRIVATE_KEY, process.env.NFT_NETWORK);
+        const nftCollection = await sdk.getContract(contract, 'edition');
+        const data = await nftCollection.call("claimBatchTo",
+            receiver,
+            claimData,
+            "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+            pricePerToken,
+            allowlistProof
+        );
+        console.log("Print Claimed :(", JSON.stringify(data));
+
+            
+    } catch (e) {  // Claiming Failed cancel the playment
+
+        try {
+            const response = await paymentsApi.cancelPayment(payment_id);
+            console.log(response.result);
+            console.log("Print already Claimed :(", e);
+            res.send("Print already Claimed :(", e);
+        } catch (error) {
+            console.log(error);
+            console.log("Print already Claimed :(, and payment cancel failed", e);
+            res.send("Print already Claimed :(", error);
+        }
+
+    }
+
+    // Complete the transcaction.
+    try {
+        const paymentComplete = await paymentsApi.completePayment(payment_id, { versionToken: version_token });
+        console.log(paymentComplete.result);
+        res.send("Error Finalizing the Payment", error);
+    } catch (error) {
+        console.log("Error Finalizing the Payment", error);
+        res.send("Error Finalizing the Payment", error);
+    }
+
 });
 
 
