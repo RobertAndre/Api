@@ -6,6 +6,10 @@ const { Client } = require('square');
 const { randomUUID } = require('crypto');
 const { ThirdwebSDK } = require('@thirdweb-dev/sdk');
 
+BigInt.prototype.toJSON = function () {
+    return this.toString();
+  };
+
 // Create an Express server
 const app = express();
 
@@ -113,19 +117,18 @@ app.post('/api/claims', authenticateToken, async (req, res) => {
   
 
 
-
         try {
             // create a delayed Capture of a Card Payment
-            const resp = await paymentsApi.createPayment(options);
-            console.log(JSON.stringify(resp));
+            const { result } = await paymentsApi.createPayment(options);
+            console.log(result);
 
             // If successful save the result for later
-            if (resp.status === 200) {
-                const paymentResult = await resp.json();
+                // const paymentResult = await resp.json();
+                const paymentResult =  result;
                 console.log(paymentResult);
                 payment_id = paymentResult.payment.id;
                 version_token = paymentResult.payment.version_token;
-            }
+           
             // set up 
         } catch (e) {
             console.log("Problems Processing Payment", e);
@@ -138,7 +141,7 @@ app.post('/api/claims', authenticateToken, async (req, res) => {
         try {
             // Time to Claim the NFTS & Prints
             const sdk = ThirdwebSDK.fromPrivateKey(process.env.TWSDK_PRIVATE_KEY, process.env.NFT_NETWORK);
-            const nftCollection = await sdk.getContract(contract, 'edition');
+            const nftCollection = await sdk.getContract(contract);
             const data = await nftCollection.call("claimBatchTo",
                 receiver,
                 claimData,
@@ -150,7 +153,7 @@ app.post('/api/claims', authenticateToken, async (req, res) => {
 
                 
         } catch (e) {  // Claiming Failed cancel the playment
-
+            console.log("payment_id", payment_id);
             try {
                 const response = await paymentsApi.cancelPayment(payment_id);
                 console.log(response.result);
