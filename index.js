@@ -105,7 +105,7 @@ app.post('/api/claims', authenticateToken, async (req, res) => {
         } catch (e) {  // Claiming Failed cancel the playment
             console.log("Print already Claimed :(", e);
             // res.send("Print Claiming failed :(", e);
-            res.status(e.response.status).send(e)
+            res.status(500).send(e)
         }
 
     }else{
@@ -129,7 +129,7 @@ app.post('/api/claims', authenticateToken, async (req, res) => {
             // set up 
         } catch (e) {
             console.log("Problems Processing Payment", e);
-            res.status(e.response.status).send(e)
+            res.status(500).send(e)
             // res.send("Problems Processing Payment", e);
         
         }
@@ -160,7 +160,7 @@ app.post('/api/claims', authenticateToken, async (req, res) => {
             } catch (error) {
                 console.log(error);
                 console.log("Print already Claimed :(, and payment cancel failed", e);
-                res.status(error.response.status).send(e)
+                res.status(500).send(e)
                 // res.send("Print already Claimed :(", error);
             }
 
@@ -174,7 +174,7 @@ app.post('/api/claims', authenticateToken, async (req, res) => {
             // res.send("Error Finalizing the Payment", error);
         } catch (error) {
             console.log("Error Finalizing the Payment", error);
-            res.status(error.response.status).send(error);
+            res.status(500).send(error);
             // res.send("Error Finalizing the Payment", error);
         }
     }
