@@ -19,17 +19,17 @@ process.env.ALLOWNFT,
 process.env.ALLOWSTORE
 ]; // Add your whitelisted domains here
 
-const corsOptions = {
-    origin: (origin, callback) => {
-        if (whitelist.includes(origin)) {
-            callback(null, true);
-        } else {
-            callback(new Error('Sorry but you have no business being Here'));
-        }
-    },
-};
+// const corsOptions = {
+//     origin: (origin, callback) => {
+//         if (whitelist.includes(origin)) {
+//             callback(null, true);
+//         } else {
+//             callback(new Error('Sorry but you have no business being Here'));
+//         }
+//     },
+// };
 
-app.use(cors(corsOptions));
+// app.use(cors(corsOptions));
 // Define your routes and API endpoints here
 
 // Start the server
