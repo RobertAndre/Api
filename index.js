@@ -100,12 +100,12 @@ app.post('/api/claims', authenticateToken, async (req, res) => {
                 allowlistProof
             );
             console.log("Print Claimed :(", JSON.stringify(data));
-            res.status(200).send(JSON.stringify(data));
+            res.send(JSON.stringify(data));
                 
         } catch (e) {  // Claiming Failed cancel the playment
             console.log("Print already Claimed :(", e);
             // res.send("Print Claiming failed :(", e);
-            res.status(500).send(e)
+            res.send(e)
         }
 
     }else{
@@ -129,7 +129,7 @@ app.post('/api/claims', authenticateToken, async (req, res) => {
             // set up 
         } catch (e) {
             console.log("Problems Processing Payment", e);
-            res.status(500).send(e)
+            res.send(e)
             // res.send("Problems Processing Payment", e);
         
         }
@@ -155,12 +155,12 @@ app.post('/api/claims', authenticateToken, async (req, res) => {
                 const response = await paymentsApi.cancelPayment(payment_id);
                 console.log(response.result);
                 console.log("Print already Claimed :(, Cancel Complete", e);
-                res.status(200).send(e)
+                res.send(e)
                 // res.send("Print already Claimed :(", e);
             } catch (error) {
                 console.log(error);
                 console.log("Print already Claimed :(, and payment cancel failed", e);
-                res.status(500).send(e)
+                res.send(e)
                 // res.send("Print already Claimed :(", error);
             }
 
@@ -170,11 +170,11 @@ app.post('/api/claims', authenticateToken, async (req, res) => {
         try {
             const paymentComplete = await paymentsApi.completePayment(payment_id, { versionToken: version_token });
             console.log(paymentComplete.result);
-            res.status(200).send(JSON.stringify(paymentComplete));
+            res.send(JSON.stringify(paymentComplete));
             // res.send("Error Finalizing the Payment", error);
         } catch (error) {
             console.log("Error Finalizing the Payment", error);
-            res.status(500).send(error);
+            res.send(error);
             // res.send("Error Finalizing the Payment", error);
         }
     }
