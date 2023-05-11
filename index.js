@@ -159,12 +159,15 @@ function authenticateToken(req, res, next) {
     console.log("token", token)
     if(token === secret){
         console.log("match")
-    }
-    jwt.verify(token, secret, (err, user) => {
-        if (err) {
-            return res.sendStatus(403);
-        }
-        req.user = user;
         next();
-    });
+    }else{
+        return res.sendStatus(403);
+    }
+    // jwt.verify(token, secret, (err, user) => {
+    //     if (err) {
+    //         return res.sendStatus(403);
+    //     }
+    //     req.user = user;
+    //     next();
+    // });
 }
