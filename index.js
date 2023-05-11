@@ -104,12 +104,12 @@ app.post('/api/claims', authenticateToken, async (req, res) => {
                 allowlistProof
             );
             console.log("Print Claimed :(", JSON.stringify(data));
-            res.send(JSON.stringify(data));
+            // res.send(JSON.stringify(data));
                 
         } catch (e) {  // Claiming Failed cancel the playment
             console.log("Print already Claimed :(", e);
             // res.send("Print Claiming failed :(", e);
-            res.send(e)
+            res.end(e)
         }
 
     }else{
@@ -131,7 +131,7 @@ app.post('/api/claims', authenticateToken, async (req, res) => {
             // set up 
         } catch (e) {
             console.log("Problems Processing Payment", e);
-            res.send(e)
+            res.end(e)
             // res.send("Problems Processing Payment", e);
         
         }
@@ -139,8 +139,14 @@ app.post('/api/claims', authenticateToken, async (req, res) => {
 
         try {
             // Time to Claim the NFTS & Prints
-            const sdk = ThirdwebSDK.fromPrivateKey(process.env.TWSDK_PRIVATE_KEY, process.env.NFT_NETWORK, );
+            const sdk = ThirdwebSDK.fromPrivateKey(process.env.TWSDK_PRIVATE_KEY, process.env.NFT_NETWORK );
             const nftCollection = await sdk.getContract(contract, "nft-drop");
+
+            console.log("receiver:", receiver );
+            console.log("claimData:", claimData );
+            console.log("pricePerToken:", pricePerToken);
+            console.log("allowlistProof:", allowlistProof );
+        
             const data = await nftCollection.call("claimBatchTo",
                 receiver,
                 claimData,
@@ -157,7 +163,7 @@ app.post('/api/claims', authenticateToken, async (req, res) => {
                 const response = await paymentsApi.cancelPayment(payment_id);
                 console.log(response.result);
                 console.log("Print already Claimed :(, Cancel Complete", e);
-                res.send(e)
+                res.end(e)
                 // res.send("Print already Claimed :(", e);
             } catch (error) {
                 console.log(error);
@@ -172,25 +178,25 @@ app.post('/api/claims', authenticateToken, async (req, res) => {
         if(claimSuccess){
             try {
                 const { result } = await paymentsApi.completePayment(payment_id, { versionToken: version_token });
-                console.log(result);
-                res.send(JSON.stringify(result));
-                // res.send("Error Finalizing the Payment", error);
+                console.log("completePayment", result);
+                res.end(result);
+
             } catch (error) {
                 console.log("Error Finalizing the Payment", error);
                 res.send(error);
-                // res.send("Error Finalizing the Payment", error);
+
             }
         }else{
             try {
                 const { result }  = await paymentsApi.cancelPayment(payment_id);
                 console.log(result);
                 console.log("Print already Claimed :(, Cancel Complete", result);
-                res.send(result)
+                res.end(result)
                 // res.send("Print already Claimed :(", e);
             } catch (error) {
                 console.log(error);
                 console.log("Print already Claimed :(, and payment cancel failed", error);
-                res.send(error)
+                res.end(error)
                 // res.send("Print already Claimed :(", error);
             }
         }
