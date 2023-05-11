@@ -52,7 +52,7 @@ app.post('/api/claims', authenticateToken, async (req, res) => {
             error: "Nice Try but It's time for you to leave.",
         });
     }
-
+    const sdk = new ThirdwebSDK("mumbai");
     const body = req.body;
     const sourceId = body.sourceId;
     const amount = body.orderTotal;
@@ -90,12 +90,12 @@ app.post('/api/claims', authenticateToken, async (req, res) => {
     // set up payment variables
     let payment_id;
     let version_token;
-   
+    let claimSuccess = false;
     if(amount === 0){
         try {
             // Time to Claim the NFTS & Prints
             const sdk = ThirdwebSDK.fromPrivateKey(process.env.TWSDK_PRIVATE_KEY, process.env.NFT_NETWORK);
-            const nftCollection = await sdk.getContract(contract, 'edition');
+            const nftCollection = await sdk.getContract(contract, "nft-drop");
             const data = await nftCollection.call("claimBatchTo",
                 receiver,
                 claimData,
@@ -124,8 +124,7 @@ app.post('/api/claims', authenticateToken, async (req, res) => {
 
             // If successful save the result for later
                 // const paymentResult = await resp.json();
-                const paymentResult =  result;
-                console.log(paymentResult);
+                const paymentResult = result;
                 payment_id = paymentResult.payment.id;
                 version_token = paymentResult.payment.version_token;
            
@@ -140,8 +139,8 @@ app.post('/api/claims', authenticateToken, async (req, res) => {
 
         try {
             // Time to Claim the NFTS & Prints
-            const sdk = ThirdwebSDK.fromPrivateKey(process.env.TWSDK_PRIVATE_KEY, process.env.NFT_NETWORK);
-            const nftCollection = await sdk.getContract(contract);
+            const sdk = ThirdwebSDK.fromPrivateKey(process.env.TWSDK_PRIVATE_KEY, process.env.NFT_NETWORK, );
+            const nftCollection = await sdk.getContract(contract, "nft-drop");
             const data = await nftCollection.call("claimBatchTo",
                 receiver,
                 claimData,
@@ -150,7 +149,7 @@ app.post('/api/claims', authenticateToken, async (req, res) => {
                 allowlistProof
             );
             console.log("Print Claimed :(", JSON.stringify(data));
-
+            claimSuccess = true;
                 
         } catch (e) {  // Claiming Failed cancel the playment
             console.log("payment_id", payment_id);
@@ -170,16 +169,32 @@ app.post('/api/claims', authenticateToken, async (req, res) => {
         }
 
         // Complete the transcaction.
-        try {
-            const paymentComplete = await paymentsApi.completePayment(payment_id, { versionToken: version_token });
-            console.log(paymentComplete.result);
-            res.send(JSON.stringify(paymentComplete));
-            // res.send("Error Finalizing the Payment", error);
-        } catch (error) {
-            console.log("Error Finalizing the Payment", error);
-            res.send(error);
-            // res.send("Error Finalizing the Payment", error);
+        if(claimSuccess){
+            try {
+                const { result } = await paymentsApi.completePayment(payment_id, { versionToken: version_token });
+                console.log(result);
+                res.send(JSON.stringify(result));
+                // res.send("Error Finalizing the Payment", error);
+            } catch (error) {
+                console.log("Error Finalizing the Payment", error);
+                res.send(error);
+                // res.send("Error Finalizing the Payment", error);
+            }
+        }else{
+            try {
+                const { result }  = await paymentsApi.cancelPayment(payment_id);
+                console.log(result);
+                console.log("Print already Claimed :(, Cancel Complete", result);
+                res.send(result)
+                // res.send("Print already Claimed :(", e);
+            } catch (error) {
+                console.log(error);
+                console.log("Print already Claimed :(, and payment cancel failed", error);
+                res.send(error)
+                // res.send("Print already Claimed :(", error);
+            }
         }
+       
     }
 
 });
