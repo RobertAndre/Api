@@ -82,7 +82,7 @@ app.post('/api/claims', authenticateToken, async (req, res) => {
         accessToken: process.env.SQUARE_ACCESS_TOKEN,
         environment: process.env.SQUARE_ENVIRONMENT,
     });
-    
+
     // set up payment variables
     let payment_id;
     let version_token;
@@ -155,8 +155,12 @@ function authenticateToken(req, res, next) {
     if (token == null) {
         return res.sendStatus(401);
     }
-
-    jwt.verify(token, process.env.BEARER_TOKEN, (err, user) => {
+    let secret =  (typeof process.env.BEARER_TOKEN === 'string') || (process.env.BEARER_TOKEN instanceof String) ? process.env.BEARER_TOKEN : process.env.BEARER_TOKEN.toString();
+    console.log("token", token)
+    if(token === secret){
+        console.log("match")
+    }
+    jwt.verify(token, secret, (err, user) => {
         if (err) {
             return res.sendStatus(403);
         }
