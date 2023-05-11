@@ -100,7 +100,7 @@ app.post('/api/claims', authenticateToken, async (req, res) => {
                 allowlistProof
             );
             console.log("Print Claimed :(", JSON.stringify(data));
-            res.status(200).send(data);
+            res.status(200).send(JSON.stringify(data));
                 
         } catch (e) {  // Claiming Failed cancel the playment
             console.log("Print already Claimed :(", e);
@@ -170,7 +170,7 @@ app.post('/api/claims', authenticateToken, async (req, res) => {
         try {
             const paymentComplete = await paymentsApi.completePayment(payment_id, { versionToken: version_token });
             console.log(paymentComplete.result);
-            res.status(200).send(error)
+            res.status(200).send(JSON.stringify(paymentComplete));
             // res.send("Error Finalizing the Payment", error);
         } catch (error) {
             console.log("Error Finalizing the Payment", error);
