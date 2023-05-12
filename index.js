@@ -167,7 +167,7 @@ app.post('/api/claims', authenticateToken, async (req, res) => {
             try {
                 const { result } = await paymentsApi.cancelPayment(payment_id);
                 // console.log(response.result);
-                console.log("ERROR: Cancel Complete");
+                console.log("ERROR: Cancel Complete", JSON.stringify(e));
                 res.end("Cancel Complete");
                 // res.send("Print already Claimed :(", e);
             } catch (error) {
