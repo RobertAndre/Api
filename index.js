@@ -44,13 +44,13 @@ app.listen(port, () => {
 
 function reformatCartItems(nft) {
     return {
-        "tokenId": nft.tokenId,
-        "claimingType": nft.claimingType,
-        "startRange": 0,
-        "endRange": 0,
+        "tokenId": nft.tokenId.toString(),
+        "claimingType": nft.claimingType.toString(),
+        "startRange": "0",
+        "endRange": "0",
         "printDataBasic": {
-            "printType": nft.printDataBasic.printType,
-            "quantity": nft.printDataBasic.quantity
+            "printType": nft.printDataBasic.printType.toString(),
+            "quantity": nft.printDataBasic.quantity.toString()
         }
     }
 }
