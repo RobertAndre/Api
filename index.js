@@ -44,7 +44,7 @@ app.listen(port, () => {
 
 function reformatCartItems(nft) {
     return {
-        "tokenId": nft.id,
+        "tokenId": nft.tokenId,
         "claimingType": nft.claimingType,
         "startRange": 0,
         "endRange": 0,
