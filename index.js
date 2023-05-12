@@ -42,7 +42,18 @@ app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });
 
-
+function reformatCartItems(nft) {
+    return {
+        "tokenId": nft.id,
+        "claimingType": nft.claimingType,
+        "startRange": 0,
+        "endRange": 0,
+        "printDataBasic": {
+            "printType": nft.printDataBasic.printType,
+            "quantity": nft.printDataBasic.quantity
+        }
+    }
+}
 
 app.post('/api/claims', authenticateToken, async (req, res) => {
     // Handle the incoming POST request here
@@ -80,6 +91,7 @@ app.post('/api/claims', authenticateToken, async (req, res) => {
     };
 
     // console.log(JSON.stringify(options));
+    const newUnclaimed = claimData.map(nft => reformatCartItems(nft));
 
     // Set up the Square Payment API 
     const { paymentsApi } = new Client({
@@ -106,10 +118,10 @@ app.post('/api/claims', authenticateToken, async (req, res) => {
 
             const data = await nftCollection.call("claimBatchTo",
                 receiver,
-                JSON.stringify(claimData),
+                newUnclaimed,
                 "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
                 pricePerToken,
-                JSON.stringify(allowlistProof)
+                allowlistProof
             );
             console.log("Print Claimed");
             // res.send(JSON.stringify(data));
@@ -150,15 +162,15 @@ app.post('/api/claims', authenticateToken, async (req, res) => {
             const nftCollection = await sdk.getContract(contract, "nft-drop");
 
             console.log("receiver:", receiver );
-            console.log("claimData:", claimData );
+            console.log("claimData:", newUnclaimed );
             console.log("pricePerToken:", pricePerToken);
             console.log("allowlistProof:", allowlistProof );
         
             const data = await nftCollection.call("claimBatchTo", receiver,  
-                                                                JSON.stringify(claimData), 
+                                                                newUnclaimed, 
                                                                 "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
                                                                 pricePerToken, 
-                                                                JSON.stringify(allowlistProof));
+                                                                allowlistProof);
             console.log("Print Claimed :(", JSON.stringify(data));
             claimSuccess = true;
                 
