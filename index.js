@@ -129,7 +129,12 @@ app.post('/api/claims', authenticateToken, async (req, res) => {
         } catch (e) {  // Claiming Failed cancel the playment
             console.log("ERROR: Print already Claimed :(", e);
             // res.send("Print Claiming failed :(", e);
-            res.end(JSON.stringify(e));
+            const response = {
+                "status": "error",
+                "location": "claiming",
+                "error": e
+            }
+            res.end(JSON.stringify(response));
         }
 
     }else{
@@ -178,15 +183,27 @@ app.post('/api/claims', authenticateToken, async (req, res) => {
       
             try {
                 const { result } = await paymentsApi.cancelPayment(payment_id);
-                // console.log(response.result);
+               
                 console.log("ERROR: Cancel Complete", JSON.stringify(e));
-                res.end("Cancel Complete");
-                // res.send("Print already Claimed :(", e);
+              
+                const response = {
+                    "status": "error",
+                    "location": "claiming",
+                    "error": e
+                }
+                res.end(JSON.stringify(response));
+
+             
             } catch (error) {
                 console.log(error);
-                console.log("ERROR: Print already Claimed :(, and payment cancel failed", error);
-                res.end(JSON.stringify(error))
-                // res.send("Print already Claimed :(", error);
+                console.log("ERROR: Cancel Error", error);
+                const response = {
+                    "status": "error",
+                    "location": "cancelPayment",
+                    "error": e,
+                    "cancelError": error
+                }
+                res.end(JSON.stringify(response));
             }
 
         }
@@ -195,29 +212,28 @@ app.post('/api/claims', authenticateToken, async (req, res) => {
         if(claimSuccess){
             try {
                 const { result } = await paymentsApi.completePayment(payment_id, { versionToken: version_token });
-                console.log("completePayment", result);
-                res.end("PaymentComplete");
+                console.log("completePayment:", result);
+
+                const response = {
+                    "status": "success",
+                    "location": "completePayment",
+                    "response": result
+                }
+                res.end(JSON.stringify(response));
 
             } catch (error) {
                 console.log("ERROR:Error Finalizing the Payment", error);
-                res.end(JSON.stringify(error));
+
+                const response = {
+                    "status": "error",
+                    "location": "completePayment",
+                    "error": error
+                }
+                res.end(JSON.stringify(response));
 
             }
         }
-        // else{
-        //     try {
-        //         const { result }  = await paymentsApi.cancelPayment(payment_id);
-        //         console.log(result);
-        //         console.log("ERROR: Print error, Cancel Complete", result);
-        //         res.end("Cancel Payment Complete")
-        //         // res.send("Print already Claimed :(", e);
-        //     } catch (error) {
-        //         console.log(error);
-        //         console.log("ERROR: Error X2", error);
-        //         res.end(JSON.stringify(error))
-        //         // res.send("Print already Claimed :(", error);
-        //     }
-        // }
+        
        
     }
 
