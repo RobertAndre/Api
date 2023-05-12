@@ -111,13 +111,13 @@ app.post('/api/claims', authenticateToken, async (req, res) => {
                 pricePerToken,
                 allowlistProof
             );
-            console.log("Print Claimed :(");
+            console.log("Print Claimed");
             // res.send(JSON.stringify(data));
                 
         } catch (e) {  // Claiming Failed cancel the playment
             console.log("ERROR: Print already Claimed :(", e);
             // res.send("Print Claiming failed :(", e);
-            res.end(e);
+            res.end(JSON.stringify(e));
         }
 
     }else{
@@ -139,7 +139,7 @@ app.post('/api/claims', authenticateToken, async (req, res) => {
             // set up 
         } catch (e) {
             console.log("ERROR: Problems Processing Payment", e);
-            res.end(e)
+            res.end(JSON.stringify(e))
             // res.send("Problems Processing Payment", e);
         
         }
@@ -169,7 +169,7 @@ app.post('/api/claims', authenticateToken, async (req, res) => {
             } catch (error) {
                 console.log(error);
                 console.log("ERROR: Print already Claimed :(, and payment cancel failed", error);
-                res.end(error)
+                res.end(JSON.stringify(error))
                 // res.send("Print already Claimed :(", error);
             }
 
@@ -180,24 +180,24 @@ app.post('/api/claims', authenticateToken, async (req, res) => {
             try {
                 const { result } = await paymentsApi.completePayment(payment_id, { versionToken: version_token });
                 console.log("completePayment", result);
-                res.end(result);
+                res.end("PaymentComplete");
 
             } catch (error) {
                 console.log("ERROR:Error Finalizing the Payment", error);
-                res.end(error);
+                res.end(JSON.stringify(error));
 
             }
         }else{
             try {
                 const { result }  = await paymentsApi.cancelPayment(payment_id);
                 console.log(result);
-                console.log("ERROR: Print already Claimed :(, Cancel Complete", result);
-                res.end(result)
+                console.log("ERROR: Print error, Cancel Complete", result);
+                res.end("Cancel Payment Complete")
                 // res.send("Print already Claimed :(", e);
             } catch (error) {
                 console.log(error);
-                console.log("ERROR: Print already Claimed :(, and payment cancel failed", error);
-                res.end(error)
+                console.log("ERROR: Error X2", error);
+                res.end(JSON.stringify(error))
                 // res.send("Print already Claimed :(", error);
             }
         }
