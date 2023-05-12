@@ -124,7 +124,13 @@ app.post('/api/claims', authenticateToken, async (req, res) => {
                 allowlistProof
             );
             console.log("Print Claimed");
-            // res.send(JSON.stringify(data));
+
+            const response = {
+                "status": "success",
+                "location": "completePayment",
+                "response": data
+            }
+            res.end(JSON.stringify(response));
                 
         } catch (e) {  // Claiming Failed cancel the playment
             console.log("ERROR: Print already Claimed :(", e);
@@ -163,7 +169,14 @@ app.post('/api/claims', authenticateToken, async (req, res) => {
 
         try {
             // Time to Claim the NFTS & Prints
-            const sdk = ThirdwebSDK.fromPrivateKey(process.env.TWSDK_PRIVATE_KEY, process.env.NFT_NETWORK );
+            const sdk = ThirdwebSDK.fromPrivateKey(process.env.TWSDK_PRIVATE_KEY, process.env.NFT_NETWORK, {
+                gasless: {
+                  // By specifying a gasless configuration - all transactions will get forwarded to enable gasless transactions
+                  openzeppelin: {
+                    relayerUrl: process.env.OPENZEPPELIN_URL,
+                  }
+                },
+              });
             const nftCollection = await sdk.getContract(contract, "nft-drop");
 
             console.log("receiver:", receiver );
