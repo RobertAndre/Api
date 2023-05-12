@@ -79,7 +79,7 @@ app.post('/api/claims', authenticateToken, async (req, res) => {
         shippingAddress: shippingAddress
     };
 
-    console.log(JSON.stringify(options));
+    // console.log(JSON.stringify(options));
 
     // Set up the Square Payment API 
     const { paymentsApi } = new Client({
@@ -103,6 +103,7 @@ app.post('/api/claims', authenticateToken, async (req, res) => {
                 },
               });
             const nftCollection = await sdk.getContract(contract, "nft-drop");
+
             const data = await nftCollection.call("claimBatchTo",
                 receiver,
                 claimData,
@@ -160,10 +161,10 @@ app.post('/api/claims', authenticateToken, async (req, res) => {
         } catch (e) {  // Claiming Failed cancel the playment
       
             try {
-                const response = await paymentsApi.cancelPayment(payment_id);
-                console.log(response.result);
+                const { result } = await paymentsApi.cancelPayment(payment_id);
+                // console.log(response.result);
                 console.log("ERROR: Print already Claimed :(, Cancel Complete");
-                res.end(response.result);
+                res.end("Cancel Complete");
                 // res.send("Print already Claimed :(", e);
             } catch (error) {
                 console.log(error);
