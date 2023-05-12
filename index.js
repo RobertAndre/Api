@@ -106,10 +106,10 @@ app.post('/api/claims', authenticateToken, async (req, res) => {
 
             const data = await nftCollection.call("claimBatchTo",
                 receiver,
-                claimData,
+                JSON.stringify(claimData),
                 "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
                 pricePerToken,
-                allowlistProof
+                JSON.stringify(allowlistProof)
             );
             console.log("Print Claimed");
             // res.send(JSON.stringify(data));
@@ -154,7 +154,11 @@ app.post('/api/claims', authenticateToken, async (req, res) => {
             console.log("pricePerToken:", pricePerToken);
             console.log("allowlistProof:", allowlistProof );
         
-            const data = await nftCollection.call("claimBatchTo", receiver, claimData, "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", pricePerToken, allowlistProof);
+            const data = await nftCollection.call("claimBatchTo", receiver,  
+                                                                JSON.stringify(claimData), 
+                                                                "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+                                                                pricePerToken, 
+                                                                JSON.stringify(allowlistProof));
             console.log("Print Claimed :(", JSON.stringify(data));
             claimSuccess = true;
                 
@@ -163,7 +167,7 @@ app.post('/api/claims', authenticateToken, async (req, res) => {
             try {
                 const { result } = await paymentsApi.cancelPayment(payment_id);
                 // console.log(response.result);
-                console.log("ERROR: Print already Claimed :(, Cancel Complete");
+                console.log("ERROR: Cancel Complete");
                 res.end("Cancel Complete");
                 // res.send("Print already Claimed :(", e);
             } catch (error) {
@@ -187,20 +191,21 @@ app.post('/api/claims', authenticateToken, async (req, res) => {
                 res.end(JSON.stringify(error));
 
             }
-        }else{
-            try {
-                const { result }  = await paymentsApi.cancelPayment(payment_id);
-                console.log(result);
-                console.log("ERROR: Print error, Cancel Complete", result);
-                res.end("Cancel Payment Complete")
-                // res.send("Print already Claimed :(", e);
-            } catch (error) {
-                console.log(error);
-                console.log("ERROR: Error X2", error);
-                res.end(JSON.stringify(error))
-                // res.send("Print already Claimed :(", error);
-            }
         }
+        // else{
+        //     try {
+        //         const { result }  = await paymentsApi.cancelPayment(payment_id);
+        //         console.log(result);
+        //         console.log("ERROR: Print error, Cancel Complete", result);
+        //         res.end("Cancel Payment Complete")
+        //         // res.send("Print already Claimed :(", e);
+        //     } catch (error) {
+        //         console.log(error);
+        //         console.log("ERROR: Error X2", error);
+        //         res.end(JSON.stringify(error))
+        //         // res.send("Print already Claimed :(", error);
+        //     }
+        // }
        
     }
 
@@ -214,9 +219,9 @@ function authenticateToken(req, res, next) {
         return res.sendStatus(401);
     }
     let secret =  (typeof process.env.BEARER_TOKEN === 'string') || (process.env.BEARER_TOKEN instanceof String) ? process.env.BEARER_TOKEN : process.env.BEARER_TOKEN.toString();
-    console.log("token", token)
+  
     if(token === secret){
-        console.log("match")
+
         next();
     }else{
         return res.sendStatus(403);
