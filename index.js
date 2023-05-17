@@ -5,7 +5,7 @@ const cors = require('cors');
 const { Client } = require('square');
 const { randomUUID } = require('crypto');
 const { ThirdwebSDK } = require('@thirdweb-dev/sdk');
-const  {jsonGraphqlExpress} =  require( 'json-graphql-server');
+const  jsonGraphqlExpress =  require( 'json-graphql-server');
 const  db =  require('./db');
 
 
@@ -59,7 +59,7 @@ function reformatCartItems(nft) {
     }
 }
 
-app.use('/api/nfts', authenticateToken, jsonGraphqlExpress.default(db));
+app.use('/api/nfts', authenticateToken, jsonGraphqlExpress(db));
 
 app.post('/api/claims', authenticateToken, async (req, res) => {
     // Handle the incoming POST request here
