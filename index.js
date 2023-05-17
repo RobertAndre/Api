@@ -6,7 +6,7 @@ const { Client } = require('square');
 const { randomUUID } = require('crypto');
 const { ThirdwebSDK } = require('@thirdweb-dev/sdk');
 const  {jsonGraphqlExpress} =  require( 'json-graphql-server');
-const  { db } =  require('./db');
+const  db =  require('./db');
 
 
 
