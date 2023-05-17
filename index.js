@@ -6,7 +6,7 @@ const { Client } = require('square');
 const { randomUUID } = require('crypto');
 const { ThirdwebSDK } = require('@thirdweb-dev/sdk');
 const  jsonGraphqlExpress =  require( 'json-graphql-server');
-const  db =  {
+const  data =  {
     nfts: [
         {
             "id": 1,
@@ -87603,7 +87603,7 @@ const app = express();
 // Use body-parser middleware to parse request bodies
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-
+app.use('/api/nfts', jsonGraphqlExpress(data));
 // Configure CORS to allow requests only from whitelisted domains
 const whitelist = [process.env.ALLOWDEV,
 process.env.ALLOWNFT,
@@ -87642,7 +87642,7 @@ function reformatCartItems(nft) {
     }
 }
 
-app.use('/api/nfts', authenticateToken, jsonGraphqlExpress(db));
+
 
 app.post('/api/claims', authenticateToken, async (req, res) => {
     // Handle the incoming POST request here
