@@ -5,6 +5,10 @@ const cors = require('cors');
 const { Client } = require('square');
 const { randomUUID } = require('crypto');
 const { ThirdwebSDK } = require('@thirdweb-dev/sdk');
+import jsonGraphqlExpress from 'json-graphql-server';
+import db from './db';
+
+app.use('/graphql', jsonGraphqlExpress(db));
 
 BigInt.prototype.toJSON = function () {
     return this.toString();
@@ -54,6 +58,8 @@ function reformatCartItems(nft) {
         }
     }
 }
+
+app.use('/api/nfts', authenticateToken, jsonGraphqlExpress(data));
 
 app.post('/api/claims', authenticateToken, async (req, res) => {
     // Handle the incoming POST request here
