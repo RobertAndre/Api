@@ -17,11 +17,13 @@
     "cors": "^2.8.5",
     "ethers": "^5.7.2",
     "express": "^4.18.2",
-    "json-graphql-server": "^2.3.2",
     "jsonwebtoken": "^9.0.0",
     "square": "^26.0.0"
   },
   "engines": {
     "node": ">=14"
+  },
+  "devDependencies": {
+    "json-graphql-server": "^2.3.2"
   }
 }
