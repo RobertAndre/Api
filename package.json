@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js",
+    "start": "json-graphql-server db.js && node index.js",
     "postinstall": "export THIRDWEB_CLI_SKIP_INTRO=true && npx thirdweb generate --skip-update-check"
   },
   "keywords": [],
