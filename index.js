@@ -5,7 +5,6 @@ const cors = require('cors');
 const { Client } = require('square');
 const { randomUUID } = require('crypto');
 const { ThirdwebSDK } = require('@thirdweb-dev/sdk');
-app.use('/api/nfts', jsonGraphqlExpress(data));
 
 
 BigInt.prototype.toJSON = function () {
