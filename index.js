@@ -59,7 +59,7 @@ function reformatCartItems(nft) {
     }
 }
 
-app.use('/api/nfts', authenticateToken, jsonGraphqlExpress(db));
+app.use('/api/nfts', authenticateToken, jsonGraphqlExpress.default(db));
 
 app.post('/api/claims', authenticateToken, async (req, res) => {
     // Handle the incoming POST request here
