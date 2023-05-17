@@ -5,8 +5,8 @@ const cors = require('cors');
 const { Client } = require('square');
 const { randomUUID } = require('crypto');
 const { ThirdwebSDK } = require('@thirdweb-dev/sdk');
-import jsonGraphqlExpress from 'json-graphql-server';
-import db from './db';
+const  {jsonGraphqlExpress} =  require( 'json-graphql-server');
+const  { db } =  require('./db');
 
 app.use('/graphql', jsonGraphqlExpress(db));
 
