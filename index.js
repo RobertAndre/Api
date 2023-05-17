@@ -8,7 +8,7 @@ const { ThirdwebSDK } = require('@thirdweb-dev/sdk');
 const  {jsonGraphqlExpress} =  require( 'json-graphql-server');
 const  { db } =  require('./db');
 
-app.use('/graphql', jsonGraphqlExpress(db));
+
 
 BigInt.prototype.toJSON = function () {
     return this.toString();
