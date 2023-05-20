@@ -109,14 +109,17 @@ app.post('/api/claims', authenticateToken, async (req, res) => {
     if(amount === 0){
         try {
             // Time to Claim the NFTS & Prints
-            const sdk = ThirdwebSDK.fromPrivateKey(process.env.TWSDK_PRIVATE_KEY, process.env.NFT_NETWORK, {
-                gasless: {
-                  // By specifying a gasless configuration - all transactions will get forwarded to enable gasless transactions
-                  openzeppelin: {
-                    relayerUrl: process.env.OPENZEPPELIN_URL,
-                  }
-                },
-              });
+            const sdk = ThirdwebSDK.fromPrivateKey(process.env.TWSDK_PRIVATE_KEY, process.env.NFT_NETWORK
+                // , 
+            //     {
+            //     gasless: {
+            //       // By specifying a gasless configuration - all transactions will get forwarded to enable gasless transactions
+            //       openzeppelin: {
+            //         relayerUrl: process.env.OPENZEPPELIN_URL,
+            //       }
+            //     },
+            //   }
+              );
             const nftCollection = await sdk.getContract(contract, "nft-drop");
 
             const data = await nftCollection.call("claimBatchTo", 
@@ -135,6 +138,38 @@ app.post('/api/claims', authenticateToken, async (req, res) => {
             }
             res.end(JSON.stringify(response));
                 
+            if(data?.receipt.status === 1){
+                claimSuccess = true;
+            }else{
+                try {
+                    const { result } = await paymentsApi.cancelPayment(payment_id);
+                   
+                    console.log("ERROR: Cancel Complete: ", "Problem Processing the print");
+                  
+                    const response = {
+                        "status": "error",
+                        "location": "claiming",
+                        "error": "Problem Processing the print"
+                    }
+                    res.end(JSON.stringify(response));
+    
+    
+                 
+                } catch (error) {
+                    console.log(error);
+                    console.log("ERROR: Cancel Error", error);
+                    const response = {
+                        "status": "error",
+                        "location": "cancelPayment",
+                        "error": "Problem Processing the print",
+                        "cancelError": error
+                    }
+                    res.end(JSON.stringify(response));
+                }
+
+            }
+
+
         } catch (e) {  // Claiming Failed cancel the playment
             console.log("ERROR: Print already Claimed :(", e);
             // res.send("Print Claiming failed :(", e);
@@ -172,14 +207,17 @@ app.post('/api/claims', authenticateToken, async (req, res) => {
 
         try {
             // Time to Claim the NFTS & Prints
-            const sdk = ThirdwebSDK.fromPrivateKey(process.env.TWSDK_PRIVATE_KEY, process.env.NFT_NETWORK, {
-                gasless: {
-                  // By specifying a gasless configuration - all transactions will get forwarded to enable gasless transactions
-                  openzeppelin: {
-                    relayerUrl: process.env.OPENZEPPELIN_URL,
-                  }
-                },
-              });
+            const sdk = ThirdwebSDK.fromPrivateKey(process.env.TWSDK_PRIVATE_KEY, process.env.NFT_NETWORK
+            //     , 
+            //     {
+            //     gasless: {
+            //       // By specifying a gasless configuration - all transactions will get forwarded to enable gasless transactions
+            //       openzeppelin: {
+            //         relayerUrl: process.env.OPENZEPPELIN_URL,
+            //       }
+            //     },
+            //   }
+              );
             const nftCollection = await sdk.getContract(contract, "nft-drop");
 
             console.log("receiver:", receiver );
@@ -193,7 +231,38 @@ app.post('/api/claims', authenticateToken, async (req, res) => {
                                                                 pricePerToken, 
                                                                 allowlistProof]);
             console.log("Print Claimed :(", JSON.stringify(data));
-            claimSuccess = true;
+            if(data?.receipt.status === 1){
+                claimSuccess = true;
+            }else{
+                try {
+                    const { result } = await paymentsApi.cancelPayment(payment_id);
+                   
+                    console.log("ERROR: Cancel Complete: ", "Problem Processing the print");
+                  
+                    const response = {
+                        "status": "error",
+                        "location": "claiming",
+                        "error": "Problem Processing the print"
+                    }
+                    res.end(JSON.stringify(response));
+    
+    
+                 
+                } catch (error) {
+                    console.log(error);
+                    console.log("ERROR: Cancel Error", error);
+                    const response = {
+                        "status": "error",
+                        "location": "cancelPayment",
+                        "error": e,
+                        "cancelError": error
+                    }
+                    res.end(JSON.stringify(response));
+                }
+
+            }
+
+            
                 
         } catch (e) {  // Claiming Failed cancel the playment
       
@@ -208,6 +277,7 @@ app.post('/api/claims', authenticateToken, async (req, res) => {
                     "error": e
                 }
                 res.end(JSON.stringify(response));
+
 
              
             } catch (error) {
