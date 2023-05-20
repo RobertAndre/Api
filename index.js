@@ -119,12 +119,12 @@ app.post('/api/claims', authenticateToken, async (req, res) => {
               });
             const nftCollection = await sdk.getContract(contract, "nft-drop");
 
-            const data = await nftCollection.call("claimBatchTo",
-                receiver,
+            const data = await nftCollection.call("claimBatchTo", 
+                [receiver,
                 newUnclaimed,
                 "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
                 pricePerToken,
-                allowlistProof
+                allowlistProof]
             );
             console.log("Print Claimed");
 
@@ -187,11 +187,11 @@ app.post('/api/claims', authenticateToken, async (req, res) => {
             console.log("pricePerToken:", pricePerToken);
             console.log("allowlistProof:", allowlistProof );
         
-            const data = await nftCollection.call("claimBatchTo", receiver,  
+            const data = await nftCollection.call("claimBatchTo", [receiver,  
                                                                 newUnclaimed, 
                                                                 "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
                                                                 pricePerToken, 
-                                                                allowlistProof);
+                                                                allowlistProof]);
             console.log("Print Claimed :(", JSON.stringify(data));
             claimSuccess = true;
                 
