@@ -50,7 +50,7 @@ function reformatCartItems(nft) {
         "startRange": "0",
         "endRange": "0",
         "printDataBasic": {
-            "printType": nft.printDataBasic.printType.toString(),
+            "productId": nft.printDataBasic.productId.toString(),
             "quantity": nft.printDataBasic.quantity.toString()
         }
     }
@@ -109,17 +109,7 @@ app.post('/api/claims', authenticateToken, async (req, res) => {
     if(amount === 0){
         try {
             // Time to Claim the NFTS & Prints
-            const sdk = ThirdwebSDK.fromPrivateKey(process.env.TWSDK_PRIVATE_KEY, process.env.NFT_NETWORK
-                // , 
-            //     {
-            //     gasless: {
-            //       // By specifying a gasless configuration - all transactions will get forwarded to enable gasless transactions
-            //       openzeppelin: {
-            //         relayerUrl: process.env.OPENZEPPELIN_URL,
-            //       }
-            //     },
-            //   }
-              );
+            const sdk = ThirdwebSDK.fromPrivateKey(process.env.TWSDK_PRIVATE_KEY, process.env.NFT_NETWORK);
             const nftCollection = await sdk.getContract(contract, "nft-drop");
 
             const data = await nftCollection.call("claimBatchTo", 
