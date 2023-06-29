@@ -77,6 +77,7 @@ app.post('/api/claims', authenticateToken, async (req, res) => {
     const allowlistProof = body.allowlistProof;
     const shippingAddress = body.shippingAddress;
     const email = body.buyerEmailAddress;
+    const numberDiscounted = body.numberDiscounted;
     const note = body.note;
     const requestId = randomUUID();
 
@@ -117,6 +118,7 @@ app.post('/api/claims', authenticateToken, async (req, res) => {
                 newUnclaimed,
                 "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
                 pricePerToken,
+                numberDiscounted,
                 allowlistProof]
             );
             console.log("Print Claimed");
@@ -218,7 +220,8 @@ app.post('/api/claims', authenticateToken, async (req, res) => {
             const data = await nftCollection.call("claimBatchTo", [receiver,  
                                                                 newUnclaimed, 
                                                                 "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
-                                                                pricePerToken, 
+                                                                pricePerToken,
+                                                                numberDiscounted,
                                                                 allowlistProof]);
             console.log("Print Claimed :(", JSON.stringify(data));
             if(data?.receipt.status === 1){
