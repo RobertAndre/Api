@@ -56,7 +56,11 @@ function reformatCartItems(nft) {
     }
 }
 
-
+app.post('/api/wakeup', authenticateToken, async (req, res) => {
+    if (req.method !== "POST") {
+        res.end("awake");
+    }
+});
 
 app.post('/api/claims', authenticateToken, async (req, res) => {
     // Handle the incoming POST request here
@@ -110,7 +114,10 @@ app.post('/api/claims', authenticateToken, async (req, res) => {
     if(amount === 0){
         try {
             // Time to Claim the NFTS & Prints
-            const sdk = ThirdwebSDK.fromPrivateKey(process.env.TWSDK_PRIVATE_KEY, process.env.NFT_NETWORK);
+            const sdk = ThirdwebSDK.fromPrivateKey(process.env.TWSDK_PRIVATE_KEY, process.env.NFT_NETWORK,  {
+                clientId: process.env.TW_CLIENT_ID, // Use client id if using on the client side, get it from dashboard settings
+                secretKey:  process.env.TW_SECRETE_KEY, // Use secret key if using on the server, get it from dashboard settings
+              });
             const nftCollection = await sdk.getContract(contract, "nft-drop");
 
             const data = await nftCollection.call("claimBatchTo", 
@@ -196,10 +203,13 @@ app.post('/api/claims', authenticateToken, async (req, res) => {
             // res.send("Problems Processing Payment", e);
         
         }
-
+       
         try {
             // Time to Claim the NFTS & Prints
-            const sdk = ThirdwebSDK.fromPrivateKey(process.env.TWSDK_PRIVATE_KEY, process.env.NFT_NETWORK
+            const sdk = ThirdwebSDK.fromPrivateKey(process.env.TWSDK_PRIVATE_KEY, process.env.NFT_NETWORK,  {
+                clientId: process.env.TW_CLIENT_ID, // Use client id if using on the client side, get it from dashboard settings
+                secretKey:  process.env.TW_SECRETE_KEY, // Use secret key if using on the server, get it from dashboard settings
+              }
             //     , 
             //     {
             //     gasless: {
