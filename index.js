@@ -115,7 +115,6 @@ app.post('/api/claims', authenticateToken, async (req, res) => {
         try {
             // Time to Claim the NFTS & Prints
             const sdk = ThirdwebSDK.fromPrivateKey(process.env.TWSDK_PRIVATE_KEY, process.env.NFT_NETWORK,  {
-                clientId: process.env.TW_CLIENT_ID, // Use client id if using on the client side, get it from dashboard settings
                 secretKey:  process.env.TW_SECRETE_KEY, // Use secret key if using on the server, get it from dashboard settings
               });
             const nftCollection = await sdk.getContract(contract, "nft-drop");
@@ -207,7 +206,7 @@ app.post('/api/claims', authenticateToken, async (req, res) => {
         try {
             // Time to Claim the NFTS & Prints
             const sdk = ThirdwebSDK.fromPrivateKey(process.env.TWSDK_PRIVATE_KEY, process.env.NFT_NETWORK,  {
-                clientId: process.env.TW_CLIENT_ID, // Use client id if using on the client side, get it from dashboard settings
+                // clientId: process.env.TW_CLIENT_ID, // Use client id if using on the client side, get it from dashboard settings
                 secretKey:  process.env.TW_SECRETE_KEY, // Use secret key if using on the server, get it from dashboard settings
               }
             //     , 
