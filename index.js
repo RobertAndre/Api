@@ -58,8 +58,15 @@ function reformatCartItems(nft) {
 
 app.post('/api/wakeup', authenticateToken, async (req, res) => {
     if (req.method !== "POST") {
-        res.end(JSON.stringify({"message": "awake"}));
+        return res.status(400).json({
+            error: "Nice Try but It's time for you to leave.",
+        });
     }
+    const response = {
+        "status": "success",
+        "response": "awake"
+    }
+    res.end(JSON.stringify(response));
 });
 
 app.post('/api/claims', authenticateToken, async (req, res) => {
