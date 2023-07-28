@@ -121,7 +121,8 @@ app.post('/api/claims', authenticateToken, async (req, res) => {
     if(amount === 0){
         try {
             // Time to Claim the NFTS & Prints
-            const sdk = ThirdwebSDK.fromPrivateKey(process.env.TWSDK_PRIVATE_KEY, process.env.NFT_NETWORK,  {
+            const sdk = ThirdwebSDK.fromPrivateKey(process.env.TWSDK_PRIVATE_KEY, process.env.NFT_NETWORK,  
+                {
                 secretKey:  process.env.TW_SECRETE_KEY, // Use secret key if using on the server, get it from dashboard settings
               });
             const nftCollection = await sdk.getContract(contract, "nft-drop");
