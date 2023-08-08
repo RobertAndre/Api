@@ -5,7 +5,7 @@ const cors = require('cors');
 const { Client } = require('square');
 const { randomUUID } = require('crypto');
 const { ThirdwebSDK } = require('@thirdweb-dev/sdk');
-
+const { Ethers } = require('ethers')
 
 BigInt.prototype.toJSON = function () {
     return this.toString();
@@ -69,6 +69,60 @@ app.post('/api/wakeup', authenticateToken, async (req, res) => {
     res.end(JSON.stringify(response));
 });
 
+app.post('/api/discount', authenticateToken, async (req, res) => {
+    if (req.method !== "POST") {
+        return res.status(400).json({
+            error: "Nice Try but It's time for you to leave.",
+        });
+    }
+    const address = body.address;
+    const contractAddress = process.env.contractAddress;
+    
+    const readOnlySdk = new ThirdwebSDK(process.env.NFT_NETWORK, {
+        secretKey:  process.env.TW_SECRETE_KEY, // Use secret key if using on the server, get it from dashboard settings
+      }); 
+
+    const nftCollection = await readOnlySdk.getContract(contractAddress, "nft-drop");
+    const claimerProofs = await nftCollection.erc721.claimConditions.getClaimerProofs(address,);
+
+    let allowlistProof;
+    let numClaimedForFree;
+    
+    if(typeof claimerProofs !== 'undefined' && claimerProofs !== null){
+        // const numberOfNfts = await nftDrop.call("balanceOf", [address]);
+        numClaimedForFree = await nftDrop.call("numClaimedForFree", [address]);
+        const maxClaims = Number.parseInt(claimerProofs?.maxClaimable);
+        const ppToken  =  Number.parseInt(claimerProofs?.price);
+        const maxClaim = Ethers.utils.hexValue(maxClaims);
+        const ppT      = Ethers.utils.hexValue(ppToken);
+
+        allowlistProof = {
+            proof: claimerData?.proof,
+            quantityLimitPerWallet: { "type": "BigNumber", "hex": maxClaim },
+            pricePerToken: { "type": "BigNumber", "hex": ppT },
+            currency: claimerProofs?.currencyAddress.toString(),
+            numClaimedForFree: numClaimedForFree,
+            maxDiscountNumber: claimerProofs?.maxClaimable,
+          };
+
+
+    }else{
+
+        allowlistProof =  {
+            proof: [ "0x0000000000000000000000000000000000000000000000000000000000000000"],
+            quantityLimitPerWallet: { "type": "BigNumber", "hex": "0x0" },
+            pricePerToken: { "type": "BigNumber", "hex": "0x0" },
+            currency: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+            numClaimedForFree: 0,
+            maxDiscountNumber: 0,
+          }
+
+    }
+   
+    res.end(JSON.stringify(allowlistProof));
+});
+
+
 app.post('/api/claims', authenticateToken, async (req, res) => {
     // Handle the incoming POST request here
     // Access the request body using req.body
@@ -77,7 +131,8 @@ app.post('/api/claims', authenticateToken, async (req, res) => {
             error: "Nice Try but It's time for you to leave.",
         });
     }
-    const sdk = new ThirdwebSDK("mumbai");
+   
+  
     const body = req.body;
     const sourceId = body.sourceId;
     const amount = body.orderTotal;
