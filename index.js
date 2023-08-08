@@ -75,6 +75,7 @@ app.post('/api/discount', authenticateToken, async (req, res) => {
             error: "Nice Try but It's time for you to leave.",
         });
     }
+    const body = req.body;
     const address = body.address;
     const contractAddress = process.env.contractAddress;
     
