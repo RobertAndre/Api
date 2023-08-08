@@ -84,7 +84,7 @@ app.post('/api/discount', authenticateToken, async (req, res) => {
 
     const nftCollection = await readOnlySdk.getContract(contractAddress, "nft-drop");
     const claimerProofs = await nftCollection.erc721.claimConditions.getClaimerProofs(address,);
-
+    const numberOfNfts = await nftCollection.call("balanceOf", [address]);
     let allowlistProof;
     let numClaimedForFree;
     
@@ -103,6 +103,7 @@ app.post('/api/discount', authenticateToken, async (req, res) => {
             currency: claimerProofs?.currencyAddress.toString(),
             numClaimedForFree: numClaimedForFree,
             maxDiscountNumber: claimerProofs?.maxClaimable,
+            numberOwned: numberOfNfts
           };
 
 
@@ -115,6 +116,7 @@ app.post('/api/discount', authenticateToken, async (req, res) => {
             currency: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
             numClaimedForFree: 0,
             maxDiscountNumber: 0,
+            numberOwned: numberOfNfts
           }
 
     }
