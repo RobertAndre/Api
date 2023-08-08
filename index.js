@@ -120,8 +120,13 @@ app.post('/api/discount', authenticateToken, async (req, res) => {
           }
 
     }
-   
-    res.end(JSON.stringify(allowlistProof));
+  
+   const response = {
+    "status": "success",
+    "response": allowlistProof
+    }
+    console.log("allowlistProof", response);
+    res.send(JSON.stringify(response));
 });
 
 
